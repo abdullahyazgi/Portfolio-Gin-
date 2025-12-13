@@ -1,17 +1,35 @@
 "use server";
 import { SigninSchema, SignupSchema } from "@/utils/validationSchemas";
 import { z } from "zod";
-import  db  from "@/utils/db";
+import  {db}  from "@/utils/db";
 import * as bcrypt from "bcryptjs";
+import { signIn } from "@/auth";
+import { AuthError } from "next-auth";
 
 type SigninDto = z.infer<typeof SigninSchema>;
 
 export const signinAction = async (data: SigninDto) => {
   const validation = SigninSchema.safeParse(data);
   if (!validation.success)
-    return { error: "Invalid credentials" };
-  console.log(data);
-  return { success: "Signed in successfully" }
+    return { success: false, message: "Invalid credentials" };
+  
+  const { email, password } = validation.data;
+
+  try {
+    await signIn("credentials", { email, password, redirectTo: "/admin" });
+  } catch (error) {
+    if(error instanceof AuthError) {
+      switch (error.type) {
+        case "CredentialsSignin":
+          return { success: false, message: "Invalid email or password" };
+        default:
+          return { success: false, message: "Something went wrong" };
+      }
+    }
+    throw error;
+  }
+
+  return { success: true, message: "Signed in successfully" }
 }
 
 // signupAction

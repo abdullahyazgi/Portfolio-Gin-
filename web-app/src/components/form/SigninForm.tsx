@@ -9,7 +9,6 @@ const SigninForm = () => {
     const [password, setPassword] = useState("");
     const [clientError, setClientError] = useState("");
     const [serverError, setServerError] = useState("");
-    const [serverSuccess, setServerSuccess] = useState("");
 
     const formSubmitHandler = (e: React.FormEvent) => {
         e.preventDefault();
@@ -19,13 +18,8 @@ const SigninForm = () => {
             return setClientError(validation.error.issues[0].message)
 
         signinAction({ email, password }).then((result) => {
-            if (result?.error) setServerError(result.error);
-            if (result?.success) setServerSuccess(result.success);
+           if(!result.success) setServerError(result.message);
         });
-
-        setEmail("");
-        setPassword("");
-        setClientError("");
     }
 
     return (
@@ -37,7 +31,7 @@ const SigninForm = () => {
                 <input className="border border-amber-400" type="password" id="password" value={password} onChange={(e) => setPassword(e.target.value)} />
             </div>
             {(clientError || serverError) && <Alert severity="error">{clientError || serverError}</Alert>}
-            {serverSuccess && <Alert severity="success">{serverSuccess}</Alert>}
+            
             <button type="submit">Sign in</button>
         </form>
     )
