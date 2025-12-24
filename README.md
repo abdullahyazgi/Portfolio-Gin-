@@ -12,14 +12,17 @@
 ## .env
 1. env nextjs
 
-- .env file
--- DATABASE_URL="postgresql://yourUserNamePostgres:password@localhost:5432/yourDatabase?schema=public"
-- .env.local file
--- AUTH_SECRET="Password"
--- AUTH_TRUST_HOST="http://localhost:3000"
+- Create a `.env` file in the root directory nextjs
+  ```env
+  DATABASE_URL="postgresql://yourUserNamePostgres:password@localhost:5432/yourDatabase?schema=public"
+- Create a `.env.local` file in the root directory nextjs
+  ```env
+   AUTH_SECRET="Password"
+   AUTH_TRUST_HOST="http://localhost:3000"
 
 2. env Gin
-- .erv file
+- Create a `.env` file in the root directory Gin
+ ```erv
 -- PORT=8080
 -- DB_HOST=localhost
 -- DB_PORT=5432
@@ -28,5 +31,6 @@
 -- DB_NAME=yourDatabase
 -- SSL_MODE=disable
  
+
 
 
