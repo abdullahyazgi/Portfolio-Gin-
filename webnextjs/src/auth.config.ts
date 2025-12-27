@@ -7,12 +7,11 @@ import { PrismaAdapter } from "@auth/prisma-adapter";
 
 
 export default {
-
   providers: [
     Credentials({
       async authorize(data) {
         const validation = SigninSchema.safeParse(data);
-        if(validation.success) {
+        if (validation.success) {
           const { email, password } = validation.data;
           const user = await prisma.user.findUnique({ where: { email: email } });
           if (!user || !user.password) {
@@ -27,20 +26,17 @@ export default {
       }
     })
   ],
-    callbacks: {
-    async jwt({ token, account, user}) {
-      console.log(account)
-      console.log("33333333333333333333333333")
-      console.log(user)
-      if (user) {
-        token.id = user.id;
-        token.role = user.role
+
+  callbacks: {
+    async jwt({ token, user }) {
+      if (user?.role) {
+        token.role = user.role;
       }
       return token;
     },
     async session({ session, token }) {
       if (session.user && token.sub) session.user.id = token.sub;
-      if (session.user && token.role) session.user.role = token.role;
+      if (session.user && typeof token.role === "string") session.user.role = token.role;
 
       return session;
     }
@@ -49,7 +45,8 @@ export default {
   session: {
     strategy: "jwt"
   },
-    pages: {
+  pages: {
     signIn: "/signin",
   },
+
 } satisfies NextAuthConfig

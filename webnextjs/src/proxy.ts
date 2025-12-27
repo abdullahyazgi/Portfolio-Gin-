@@ -1,30 +1,41 @@
+import NextAuth from "next-auth";
 import { NextResponse } from "next/server";
 import authConfig from "./auth.config";
-import NextAuth from "next-auth";
 
-const { auth: proxy } = NextAuth({
-    
-    
-    ...authConfig,
-
-});
+const { auth } = NextAuth(authConfig);
 
 const authRoutes = ["/signin", "/signup"];
-const protectedRoutes = ["/dashboard"];
 
-export default proxy((req) =>{
-    const { nextUrl } = req;
-    const path = nextUrl.pathname;
-    const isUserSignedin: boolean = Boolean(req.auth);
+export default auth((req) => {
+  const { nextUrl } = req;
+  const path = nextUrl.pathname;
 
-    if(authRoutes.includes(path) && isUserSignedin)
-        return NextResponse.redirect(new URL("/dashboard", nextUrl));
+  const isSignedIn = !!req.auth;
+  const role = req.auth?.user?.role;
 
-        if(protectedRoutes.includes(path) && !isUserSignedin)
-        return NextResponse.redirect(new URL("/signin", nextUrl));
+  // Redirect signed-in users away from auth pages
+  if (authRoutes.includes(path) && isSignedIn) {
+    return NextResponse.redirect(new URL("/dashboard", nextUrl));
+  }
+
+  // Protect dashboard (ADMIN only)
+  if (path.startsWith("/dashboard")) {
+    if (!isSignedIn) {
+      return NextResponse.redirect(new URL("/signin", nextUrl));
+    }
+
+    if (role !== "ADMIN") {
+      return NextResponse.redirect(new URL("/", nextUrl));
+    }
+  }
+
+  return NextResponse.next();
 });
 
-
 export const config = {
-    matcher: ["/dashboard/:path"]
-}
+  matcher: [
+    "/dashboard/:path*",
+    "/signin",
+    "/signup",
+  ],
+};
