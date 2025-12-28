@@ -3,11 +3,11 @@ package handlers
 import (
 	"context"
 	"net/http"
-
 	"api/internal/models"
-
+	"api/internal/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgxpool"
+	
 )
 
 type ProjectHandler struct {
@@ -34,9 +34,12 @@ func (h *ProjectHandler) AddProject(c *gin.Context) {
 	var project models.Project
 
 	if err := c.ShouldBindJSON(&project); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{
+			"errors": utils.ValidationError(err),
+		})
 		return
 	}
+
 
 	query := `
 		INSERT INTO projects (title, description)
@@ -144,9 +147,11 @@ func (h *ProjectHandler) UpdateProject(c *gin.Context) {
 	// Get project ID from URL
 	id := c.Param("id")
 
-	// Bind request body
+	
 	if err := c.ShouldBindJSON(&project); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{
+			"errors": utils.ValidationError(err),
+		})
 		return
 	}
 
