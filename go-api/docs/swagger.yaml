@@ -3,11 +3,18 @@ definitions:
   models.Project:
     properties:
       description:
+        maxLength: 500
+        minLength: 5
         type: string
       id:
         type: string
       title:
+        maxLength: 100
+        minLength: 3
         type: string
+    required:
+    - description
+    - title
     type: object
 host: localhost:8080
 info:
