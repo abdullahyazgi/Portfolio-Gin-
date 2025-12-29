@@ -9,7 +9,7 @@ if (session?.user.role !== "ADMIN") {
 
   return (
     <div>
-      <h1>Dashboard</h1>
+      <h1>Home Dashboard</h1>
     </div>
   )
 }

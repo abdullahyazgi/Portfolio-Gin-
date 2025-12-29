@@ -10,10 +10,38 @@
  * ---------------------------------------------------------------
  */
 
-export interface ModelsProject {
+export interface DtoCreateProjectRequest {
+  /**
+   * @minLength 5
+   * @maxLength 500
+   */
+  description: string;
+  /**
+   * @minLength 3
+   * @maxLength 100
+   */
+  title: string;
+}
+
+export interface DtoUpdateProjectRequest {
+  /** @minLength 5 */
   description?: string;
-  id?: string;
+  /** @minLength 3 */
   title?: string;
+}
+
+export interface ModelsProject {
+  /**
+   * @minLength 5
+   * @maxLength 500
+   */
+  description: string;
+  id?: string;
+  /**
+   * @minLength 3
+   * @maxLength 100
+   */
+  title: string;
 }
 
 import type {
@@ -226,7 +254,10 @@ export class Api<
      * @summary Create a new project
      * @request POST:/projects
      */
-    projectsCreate: (project: ModelsProject, params: RequestParams = {}) =>
+    projectsCreate: (
+      project: DtoCreateProjectRequest,
+      params: RequestParams = {},
+    ) =>
       this.request<ModelsProject, Record<string, string>>({
         path: `/projects`,
         method: "POST",
@@ -262,7 +293,7 @@ export class Api<
      */
     projectsUpdate: (
       id: number,
-      project: ModelsProject,
+      project: DtoUpdateProjectRequest,
       params: RequestParams = {},
     ) =>
       this.request<ModelsProject, Record<string, string>>({
